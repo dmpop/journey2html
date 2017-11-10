@@ -77,7 +77,8 @@ def convert_date(datestr, timezone=None):
     :type datestr: int
     :return: returns the ISO format ('2017-10-26T14:46:47' in our example)
     """
-    return datetime.datetime.fromtimestamp(float(int(datestr/1000)), timezone).isoformat(' ')
+    #return datetime.datetime.fromtimestamp(float(int(datestr/1000)), timezone).isoformat(' ')
+    return datetime.datetime.fromtimestamp(int(datestr/1000)).strftime('%B %d, %Y %H:%M')
 
 
 def load_jsonfile(jfile, encoding=ENCODING):
@@ -90,7 +91,7 @@ def load_jsonfile(jfile, encoding=ENCODING):
     content = {}
     with jfile.open(encoding=encoding) as fh:
         src = json.load(fh)
-        for key in ("text", "photos", "date_journal"):
+        for key in ("text", "photos", "address", "date_journal"):
             content[key] = src.get(key)
     # Convert the date:
     content["date_journal"] = convert_date(content["date_journal"])
@@ -123,11 +124,11 @@ def process_jsonfiles(directory):
         log.info("Processing %s file...", jfile)
         content = load_jsonfile(jfile)
         # Create title
-        title = " ".join(content.get('text').split(" ")[:5])
-        div = E.DIV(E.H1(title))
+        #title = " ".join(content.get('text').split(" ")[:5])
+        div = E.DIV(E.H1(content.get("date_journal")))
 
         # Create date:
-        div.append(E.H2(content.get("date_journal")))
+        div.append(E.H3(content.get("address")))
 
         # Create photos:
         divimg = E.DIV()
