@@ -6,13 +6,14 @@ Generating static HTML files from Journey backups
 import argparse
 import datetime
 import json
+import markdown
 from pathlib import Path
 import logging
 from logging.config import dictConfig
 import sys
 
 import lxml
-from lxml.html import builder as E
+from lxml.html import builder as E, fromstring
 
 __version__ = "0.1.0"
 __date__ = "2017-11-09"
@@ -136,7 +137,9 @@ def process_jsonfiles(directory):
         div.append(divimg)
 
         # Create text:
-        div.append(E.P(content.get("text")))
+        text = content["text"] = markdown.markdown(content["text"])
+        texthtml=fromstring(text)
+        div.append(E.P(texthtml))
 
         body.append(div)
     return body

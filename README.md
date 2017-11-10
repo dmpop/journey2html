@@ -6,4 +6,4 @@ The [Journey](https://2appstudio.com/journey/) journaling app generates backup a
 
 ## Dependencies
 
-The script requires the *lxml* Python module. To install it on Linux, use the `sudo pip install lxml` command.
+The script requires the *lxml* and *markdown* Python modules. To install them on Linux, use the `sudo pip install lxml markdown` command.
