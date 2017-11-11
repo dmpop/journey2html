@@ -19,7 +19,7 @@ The [Journey](https://2appstudio.com/journey/) app is perfect for keeping a jour
 
 - The entire solution depends on the commercial closed-source Journey app. No Journey, no fun.
 - journey2html is a one-trick pony
-- No embellishments like tags, pagination, search, social sharing, and other decadent eccentricities
+- No embellishments like tags, pagination, search, social sharing, or other decadent eccentricities
 
 
 ## Dependencies
@@ -49,4 +49,4 @@ sudo chmod 755 /usr/local/bin/journey2html
 
 ## Usage
 
-Run the `journey2html /path/to/source/dir /path/to/backup/dir/index.html` command (if the script is not installed system-wide, use `./journey2html.py` instead of `journet2html`). Replace */path/to/source/dir* with the actual path the the extracted Journey backup archive (i.e. directory containing JSON and JPEG files).
+Run the `journey2html /path/to/source/dir /path/to/backup/dir/index.html` command (if the script is not installed system-wide, use `./journey2html.py` instead of `journey2html`). Replace */path/to/source/dir* with the actual path the extracted Journey backup archive (i.e. directory containing JSON and JPEG files).
