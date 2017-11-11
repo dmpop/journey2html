@@ -11,6 +11,7 @@ from pathlib import Path
 import logging
 from logging.config import dictConfig
 import sys
+import os
 
 import lxml
 from lxml.html import builder as E, fromstring
@@ -21,41 +22,6 @@ __author__ = "Thomas Schraitle (actual coder), Dmitri Popov (idle bystander)"
 
 # The default input and output encoding for the resulting HTML file
 ENCODING='UTF-8'
-
-#: The dictionary, used by :class:`logging.config.dictConfig`
-#: use it to setup your logging formatters, handlers, and loggers
-#: For details, see https://docs.python.org/3.4/library/logging.config.html#configuration-dictionary-schema
-DEFAULT_LOGGING_DICT = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {'format': '[%(levelname)s] %(name)s: %(message)s'},
-    },
-    'handlers': {
-        'default': {
-            'level': 'NOTSET',
-            'formatter': 'standard',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        __name__: {
-            'handlers': ['default'],
-            'level': 'INFO',
-            'propagate': True
-        }
-    }
-}
-
-#: Map verbosity level (int) to log level
-LOGLEVELS = {None: logging.WARNING,  # 0
-             0: logging.WARNING,
-             1: logging.INFO,
-             2: logging.DEBUG,
-}
-
-#: Instantiate the logger
-log = logging.getLogger(__name__)
 
 
 def listjsonfiles(directory):
@@ -77,7 +43,6 @@ def convert_date(datestr, timezone=None):
     :type datestr: int
     :return: returns the ISO format ('2017-10-26T14:46:47' in our example)
     """
-    #return datetime.datetime.fromtimestamp(float(int(datestr/1000)), timezone).isoformat(' ')
     return datetime.datetime.fromtimestamp(int(datestr/1000)).strftime('%B %d, %Y %H:%M')
 
 
@@ -121,14 +86,13 @@ def process_jsonfiles(directory):
     body = gen_html()
 
     for jfile in listjsonfiles(directory):
-        log.info("Processing %s file...", jfile)
         content = load_jsonfile(jfile)
         # Create title
         #title = " ".join(content.get('text').split(" ")[:5])
         div = E.DIV(E.H1(content.get("date_journal")))
 
         # Create date:
-        div.append(E.H3(content.get("address")))
+        div.append(E.H5(content.get("address")))
 
         # Create photos:
         divimg = E.DIV()
@@ -154,7 +118,6 @@ def output_html(tree, htmlfile, *, encoding=ENCODING, pretty_print=True):
     :param encoding: the encoding
     :param pretty_print: should the output be pretty printed?
     """
-    log.debug("Writing HTML tree to %s", htmlfile)
     tree.write(htmlfile, encoding=encoding, pretty_print=pretty_print)
 
 
@@ -176,23 +139,15 @@ def parsecli():
                         help="Name of the HTML file",
                         )
     args = parser.parse_args()
-    # Setup logging and the log level according to the "-v" option
-    dictConfig(DEFAULT_LOGGING_DICT)
-    log.setLevel(LOGLEVELS.get(args.verbose, logging.DEBUG))
-    log.debug("Parsed arguments: %s", args)
-
     directory = args.directory
     if not Path(directory).exists():
         parser.error("Directory %s does not exist." % directory)
 
     htmlfile = args.htmlfile
-    if Path(htmlfile).exists():
-        parser.error("File %s already exists. Choose a different name." % htmlfile)
     return args
 
 
 if __name__ == "__main__":
     args = parsecli()
     html = process_jsonfiles(args.directory).getroottree()
-    output_html(html, args.htmlfile)
- 
+    output_html(html, os.path.join(args.directory, args.htmlfile))

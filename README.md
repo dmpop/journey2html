@@ -28,7 +28,7 @@ The script requires the *lxml* and *markdown* Python modules. HTML pages generat
 
 ## Installation
 
-- Install the required Python modules on Linux, use the `sudo pip install lxml markdown` command
+- Install the required Python modules on Linux, use the `sudo pip3 install lxml markdown` command
 - Clone the *journet2html* repository by running the `git clone https://github.com/dmpop/journey2html.git` command. Alternatively, grab the latest source in the ZIP format and unpack the downloaded archive.
 
 While it's possible the script directly from the *journey2html* directory, you can also install it system-wide using the followin commands:
@@ -49,4 +49,4 @@ sudo chmod 755 /usr/local/bin/journey2html
 
 ## Usage
 
-Run the `journey2html /path/to/source/dir /path/to/backup/dir/index.html` command (if the script is not installed system-wide, use `./journey2html.py` instead of `journey2html`). Replace */path/to/source/dir* with the actual path the extracted Journey backup archive (i.e. directory containing JSON and JPEG files).
+Run the `journey2html /path/to/source/dir index.html` command (if the script is not installed system-wide, use `./journey2html.py` instead of `journey2html`). Replace */path/to/source/dir* with the actual path the extracted Journey backup archive (i.e. directory containing JSON and JPEG files).
