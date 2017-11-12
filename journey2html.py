@@ -8,11 +8,8 @@ import datetime
 import json
 import markdown
 from pathlib import Path
-import logging
-from logging.config import dictConfig
 import sys
 import os
-
 import lxml
 from lxml.html import builder as E, fromstring
 
@@ -135,7 +132,7 @@ def parsecli():
                         help="Directory containing JSON files",
                         )
     parser.add_argument('htmlfile',
-                        default="journey.html",
+                        default="index.html",
                         help="Name of the HTML file",
                         )
     args = parser.parse_args()
