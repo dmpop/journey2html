@@ -70,7 +70,7 @@ def gen_html(encoding=ENCODING):
     """
     body = E.BODY()
     html = E.HTML(E.HEAD(
-            E.LINK(rel="stylesheet", href="journey.css", type="text/css"),
+            E.LINK(rel="stylesheet", href="https://unpkg.com/sakura.css/css/sakura-dark.css", type="text/css"),
             E.META(charset=encoding),
         ),
         body)
