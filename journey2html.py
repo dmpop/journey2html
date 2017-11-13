@@ -25,10 +25,11 @@ __date__ = "2017-11-09"
 __author__ = "Thomas Schraitle (actual coder), Dmitri Popov (idle bystander)"
 
 # The default input and output encoding for the resulting HTML file
-ENCODING='UTF-8'
+ENCODING = 'UTF-8'
 
 #
-CSSFILE="https://unpkg.com/sakura.css/css/sakura-dark.css"
+CSSFILE = "https://unpkg.com/sakura.css/css/sakura-dark.css"
+
 
 def listjsonfiles(directory):
     """Yields a list of JSON files
@@ -44,10 +45,12 @@ def listjsonfiles(directory):
 def convert_date(datestr, timezone=None):
     """Convert date and time from POSIX to ISO format
 
-    :param datestr: integer of POSIX time; the last three digits are microseconds
+    :param datestr: integer of POSIX time; the last three digits are
+                    microseconds
                     for example: "1509022007088" => 1509022007.088
     :type datestr: int
-    :return: returns the ISO format ('2017-10-26T14:46:47' in our example)
+    :return: returns the ISO format ('2017-10-26T14:46:47' in our
+             example)
     """
     return datetime.datetime.fromtimestamp(int(datestr/1000)).strftime('%B %d, %Y %H:%M')
 
@@ -110,7 +113,6 @@ def process_jsonfiles(zipdir):
     for jfile in listjsonfiles(str(zipdir)):
         content = load_jsonfile(jfile)
         # Create title
-        #title = " ".join(content.get('text').split(" ")[:5])
         div = E.DIV(E.H1(content.get("date_journal")))
 
         # Create date:
@@ -125,7 +127,7 @@ def process_jsonfiles(zipdir):
 
         # Create text:
         text = content["text"] = markdown.markdown(content["text"])
-        texthtml=fromstring(text)
+        texthtml = fromstring(text)
         div.append(E.P(texthtml))
 
         body.append(div)
@@ -149,7 +151,8 @@ def parsecli():
     :return: returns the :class:`argparse.Namespace` class
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--version', action='version', version='%(prog)s {}'.format(__version__))
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {}'.format(__version__))
     # Add options here...
     parser.add_argument('zipfile',
                         # default=".",
