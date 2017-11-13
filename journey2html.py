@@ -28,6 +28,8 @@ __author__ = "Thomas Schraitle (actual coder), Dmitri Popov (idle bystander)"
 # The default input and output encoding for the resulting HTML file
 ENCODING='UTF-8'
 
+#
+CSSFILE="https://unpkg.com/sakura.css/css/sakura-dark.css"
 
 def listjsonfiles(directory):
     """Yields a list of JSON files
@@ -75,7 +77,7 @@ def gen_html(encoding=ENCODING):
     """
     body = E.BODY()
     html = E.HTML(E.HEAD(
-            E.LINK(rel="stylesheet", href="https://unpkg.com/sakura.css/css/sakura-dark.css", type="text/css"),
+            E.LINK(rel="stylesheet", href=CSSFILE, type="text/css"),
             E.META(charset=encoding),
         ),
         body)
