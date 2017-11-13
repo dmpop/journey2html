@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
 Generating static HTML files from Journey backups
+
+The HTML file "index.html" is stored in the directory named
+by the original ZIP backup.
+
+For example, ZIP file is "journey-foo.zip" the HTML file
+is stored as "journey-foo/index.html".
 """
 
 import argparse
@@ -10,6 +16,8 @@ import markdown
 from pathlib import Path
 import sys
 import os
+import zipfile
+
 import lxml
 from lxml.html import builder as E, fromstring
 
@@ -126,24 +134,24 @@ def parsecli():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--version', action='version', version='%(prog)s {}'.format(__version__))
     # Add options here...
-    parser.add_argument('directory',
-                        default=".",
-                        help="Directory containing JSON files",
-                        )
-    parser.add_argument('htmlfile',
-                        default="index.html",
-                        help="Name of the HTML file",
+    parser.add_argument('zipfile',
+                        # default=".",
+                        help="Path to ZIP file (including filename)",
                         )
     args = parser.parse_args()
-    directory = args.directory
-    if not Path(directory).exists():
-        parser.error("Directory %s does not exist." % directory)
+    zf = args.zipfile
+    args.dir = Path(zf).stem
+    if not Path(zf).exists():
+        parser.error("ZIP file %s does not exist." % zf)
 
-    htmlfile = args.htmlfile
+    if Path(args.dir).exists():
+        parser.error("Directory %s already exists." % args.dir)
+
+    args.htmlfile = Path(zf.stem).joinpath("index.html")
     return args
 
 
 if __name__ == "__main__":
     args = parsecli()
-    html = process_jsonfiles(args.directory).getroottree()
-    output_html(html, os.path.join(args.directory, args.htmlfile))
+    html = process_jsonfiles(args.zipfile).getroottree()
+    output_html(html, os.path.join(args.zipfile, args.htmlfile))
