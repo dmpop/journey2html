@@ -15,7 +15,6 @@ import json
 import markdown
 from pathlib import Path
 import sys
-import os
 import zipfile
 
 import lxml
@@ -61,12 +60,16 @@ def load_jsonfile(jfile, encoding=ENCODING):
     :return: returns the relevant content of the JSON file
     """
     content = {}
-    with jfile.open(encoding=encoding) as fh:
-        src = json.load(fh)
-        for key in ("text", "photos", "address", "date_journal"):
-            content[key] = src.get(key)
-    # Convert the date:
-    content["date_journal"] = convert_date(content["date_journal"])
+    try:
+        with jfile.open(encoding=encoding) as fh:
+            src = json.load(fh)
+            for key in ("text", "photos", "address", "date_journal"):
+                content[key] = src.get(key)
+        # Convert the date:
+        content["date_journal"] = convert_date(content["date_journal"])
+    except ValueError as error:
+        print("ERROR (in %r): %s" % (str(jfile), error), file=sys.stderr)
+        sys.exit(10)
     return content
 
 
@@ -84,15 +87,27 @@ def gen_html(encoding=ENCODING):
     return body
 
 
-def process_jsonfiles(directory):
-    """Process all JSON files in a given directory
+def expand_ziparchive(ziparchive, zipdir):
+    """Expand the ZIP archive into a directory
 
-    :param directory: directory name
-    :type directory: str
+    :param ziparchive: Path to ZIP file
+    :type ziparchive: Path | str
+    :param zipdir: directory to extract all ZIP content
+    :type zipdir: Path | str
+    """
+    with zipfile.ZipFile(str(ziparchive)) as zz:
+        zz.extractall(str(zipdir))
+
+
+def process_jsonfiles(zipdir):
+    """Process all JSON files in the resulting directory
+
+    :param zipdir: zipdir name
+    :type zipdir: Path | str
     """
     body = gen_html()
 
-    for jfile in listjsonfiles(directory):
+    for jfile in listjsonfiles(str(zipdir)):
         content = load_jsonfile(jfile)
         # Create title
         #title = " ".join(content.get('text').split(" ")[:5])
@@ -125,7 +140,7 @@ def output_html(tree, htmlfile, *, encoding=ENCODING, pretty_print=True):
     :param encoding: the encoding
     :param pretty_print: should the output be pretty printed?
     """
-    tree.write(htmlfile, encoding=encoding, pretty_print=pretty_print)
+    tree.write(str(htmlfile), encoding=encoding, pretty_print=pretty_print)
 
 
 def parsecli():
@@ -141,19 +156,32 @@ def parsecli():
                         help="Path to ZIP file (including filename)",
                         )
     args = parser.parse_args()
-    zf = args.zipfile
-    args.dir = Path(zf).stem
-    if not Path(zf).exists():
+    zf = Path(args.zipfile)
+    args.zipdir = Path(Path(zf).stem)
+    if not zf.exists():
         parser.error("ZIP file %s does not exist." % zf)
 
-    if Path(args.dir).exists():
-        parser.error("Directory %s already exists." % args.dir)
+    if args.zipdir.exists():
+        parser.error("Directory %s already exists." % args.zipdir)
 
-    args.htmlfile = Path(zf.stem).joinpath("index.html")
+    args.htmlfile = args.zipdir.joinpath("index.html")
     return args
+
+
+def process(args):
+    """Process everything and catch any errors
+
+    :param args: result from argparse
+    """
+    try:
+        expand_ziparchive(args.zipfile, args.zipdir)
+        html = process_jsonfiles(args.zipdir).getroottree()
+        output_html(html, str(args.htmlfile))
+    except (FileNotFoundError, ) as error:
+        print("ERROR: %s" % error, file=sys.stderr)
+        sys.exit(20)
 
 
 if __name__ == "__main__":
     args = parsecli()
-    html = process_jsonfiles(args.zipfile).getroottree()
-    output_html(html, os.path.join(args.zipfile, args.htmlfile))
+    process(args)
