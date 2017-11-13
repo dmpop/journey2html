@@ -47,4 +47,4 @@ sudo chmod 755 /usr/local/bin/journey2html
 
 ## Usage
 
-Run the `journey2html /path/to/source/dir index.html` command (if the script is not installed system-wide, use `./journey2html.py` instead of `journey2html`). Replace */path/to/source/dir* with the actual path the extracted Journey backup archive (i.e. directory containing JSON and JPEG files).
+Run the `journey2html /path/to/journal-xxxxxxxxxxxxx.zip` command (if the script is not installed system-wide, use `./journey2html.py` instead of `journey2html`). Replace */path/to/journal-xxxxxxxxxxxxx.zip* with the actual path to the Journey backup ZIP archive.
